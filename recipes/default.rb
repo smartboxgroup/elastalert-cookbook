@@ -22,16 +22,14 @@ end
 end
 
 if node['elastalert']['rules'] then
-node['elastalert']['rules'].each do |rule|
-  mutable_hash = JSON.parse(rule.dup.to_json)
-  yml_rule_config = mutable_hash.to_yaml
-
-file "#{node['elastalert']['conf_dir']}/rules/rule.yaml" do
-  content "#{yml_rule_config}"
-  mode 0644
-end
-
-end
+  node['elastalert']['rules'].each do |name,rule|
+    mutable_hash = JSON.parse(rule.dup.to_json)
+    yml_rule_config = mutable_hash.to_yaml
+    file "#{node['elastalert']['conf_dir']}/rules/#{name}-rule.yaml" do
+      content "#{yml_rule_config}"
+      mode 0644
+    end
+  end
 end
 
 # Start elastalert container
