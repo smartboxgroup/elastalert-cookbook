@@ -17,7 +17,7 @@ end
 
 node.default['elastalert']['es_host'] = search(:node, "#{node['elastalert']['es_node_search_query']}").first.ipaddress
 
-%w{config.yaml elastalert_supervisord.conf}.each do |config_file|
+%w{elastalert_config.yaml elastalert_supervisord.conf}.each do |config_file|
   template "#{node['elastalert']['conf_dir']}/config/#{config_file}" do
     source "#{config_file}.erb"
   end
@@ -39,8 +39,7 @@ docker_container "elastalert" do
   container_name "elastalert"
   repo "#{node["docker"]["registry"]}/#{node['docker']['elastalert']['image']}"
   timeout 10
-  volumes [ "#{node['elastalert']['log_dir']}:/opt/logs:rw" ]
-  #"#{node['elastalert']['conf_dir']}/FIXME/:/www:rw"
+  volumes [ "#{node['elastalert']['log_dir']}:/opt/logs:rw", "#{node['elastalert']['conf_dir']}/config/:/opt/config:ro", "#{node['elastalert']['conf_dir']}/rules/:/opt/rules:ro"  ]
   env [ 'SET_CONTAINER_TIMEZONE=true', 'CONTAINER_TIMEZONE=Europe/Dublin',
         "ELASTICSEARCH_HOST=#{node['elastalert']['es_host']}", "ELASTICSEARCH_PORT=#{node['elastalert']['es_port']}" ]
   tag node['docker']['elastalert']['tag']
