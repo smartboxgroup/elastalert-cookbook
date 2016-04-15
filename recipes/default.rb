@@ -15,6 +15,8 @@ directory node['elastalert']['log_dir']
   end
 end
 
+node.default['elastalert']['es_host'] = search(:node, "#{node['elastalert']['es_node_search_query']}").first.ipaddress
+
 %w{config.yaml elastalert_supervisord.conf}.each do |config_file|
   template "#{node['elastalert']['conf_dir']}/config/#{config_file}" do
     source "#{config_file}.erb"

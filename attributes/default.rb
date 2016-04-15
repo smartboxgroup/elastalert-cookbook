@@ -1,6 +1,6 @@
 default['elastalert']['conf_dir'] = '/etc/elastalert/'
 default['elastalert']['log_dir'] = '/var/log/elastalert/'
-default['elastalert']['es_host'] = '10.10.0.167'
+default['elastalert']['es_host'] = ''
 default['elastalert']['es_port'] = '9200'
 default['elastalert']['alert_time_limit_hours'] = '12'
 default['elastalert']['run_every_seconds'] = '60'
@@ -9,3 +9,4 @@ default['elastalert']['supervisord']['log_level'] = 'debug'
 default['elastalert']['hipchat']['auth_token'] = '46FFhvky24Nj4JzehL1N0gEb2UoaA1L8kasA5Mzz'
 default['elastalert']['hipchat']['room_id'] = '930079'
 default['elastalert']['pagerduty']['auth_token'] = ''
+default['elastalert']['es_node_search_query'] = "role:elasticsearch AND chef_environment:#{node.chef_environment}"
