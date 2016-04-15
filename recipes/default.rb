@@ -7,7 +7,9 @@ docker_image "#{node['docker']['registry']}/#{node['docker']['elastalert']['imag
   action :pull_if_missing
 end
 
-directory node['elastalert']['log_dir']
+directory node['elastalert']['log_dir'] do
+  recursive true
+end
 
 %w{rules config}.each do |dir|
   directory "#{node['elastalert']['conf_dir']}/#{dir}" do
@@ -40,7 +42,7 @@ docker_container "elastalert" do
   repo "#{node["docker"]["registry"]}/#{node['docker']['elastalert']['image']}"
   timeout 10
   volumes [ "#{node['elastalert']['log_dir']}:/opt/logs:rw", "#{node['elastalert']['conf_dir']}/config/:/opt/config:ro", "#{node['elastalert']['conf_dir']}/rules/:/opt/rules:ro"  ]
-  env [ 'SET_CONTAINER_TIMEZONE=true', 'CONTAINER_TIMEZONE=Europe/Dublin',
+  env [ "SET_CONTAINER_TIMEZONE=#{node['elastalert']['set_time_zone']}", "CONTAINER_TIMEZONE=#{node['elastalert']['time_zone']}",
         "ELASTICSEARCH_HOST=#{node['elastalert']['es_host']}", "ELASTICSEARCH_PORT=#{node['elastalert']['es_port']}" ]
   tag node['docker']['elastalert']['tag']
 end
