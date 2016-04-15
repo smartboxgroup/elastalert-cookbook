@@ -26,6 +26,7 @@ end
 %w{elastalert_config.yaml elastalert_supervisord.conf}.each do |config_file|
   template "#{node['elastalert']['conf_dir']}/config/#{config_file}" do
     source "#{config_file}.erb"
+    notifies :restart, 'docker_container[elastalert]', :immediately
   end
 end
 
@@ -41,8 +42,7 @@ if node['elastalert']['rules'] then
 end
 
 # Start elastalert container
-docker_container "elastalert" do
-  container_name "elastalert"
+docker_container 'elastalert' do
   repo "#{node["docker"]["registry"]}/#{node['docker']['elastalert']['image']}"
   volumes [ "#{node['elastalert']['log_dir']}:/opt/logs:rw", "#{node['elastalert']['conf_dir']}/config/:/opt/config:ro", "#{node['elastalert']['conf_dir']}/rules/:/opt/rules:ro"  ]
   env [ "SET_CONTAINER_TIMEZONE=#{node['elastalert']['set_time_zone']}", "CONTAINER_TIMEZONE=#{node['elastalert']['time_zone']}",
