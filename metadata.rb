@@ -6,4 +6,4 @@ description      'Installs/Configures smartbox-workers'
 long_description 'Installs/Configures smartbox-workers'
 version          '0.1.0'
 
-depends "docker"
+depends "docker", "~> 2.0"

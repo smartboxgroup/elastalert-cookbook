@@ -17,7 +17,11 @@ end
   end
 end
 
-node.default['elastalert']['es_host'] = search(:node, "#{node['elastalert']['es_node_search_query']}").first.ipaddress
+if Chef::Config[:solo]
+  Chef::Log.warn('Skipping chef search for Logstash config')
+else
+  node.default['elastalert']['es_host'] = search(:node, "#{node['elastalert']['es_node_search_query']}").first.ipaddress
+end
 
 %w{elastalert_config.yaml elastalert_supervisord.conf}.each do |config_file|
   template "#{node['elastalert']['conf_dir']}/config/#{config_file}" do

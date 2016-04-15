@@ -1,10 +1,10 @@
 default['elastalert']['conf_dir'] = '/etc/elastalert/'
 default['elastalert']['log_dir'] = '/var/log/elastalert/'
 default['elastalert']['es_host'] = ''
-default['elastalert']['es_port'] = '9200'
-default['elastalert']['alert_time_limit_hours'] = '12'
-default['elastalert']['run_every_seconds'] = '60'
-default['elastalert']['buffer_time_minutes'] = '15'
+default['elastalert']['es_port'] = 9200
+default['elastalert']['alert_time_limit_hours'] = 12
+default['elastalert']['run_every_seconds'] = 60
+default['elastalert']['buffer_time_minutes'] = 15
 default['elastalert']['supervisord']['log_level'] = 'debug'
 default['elastalert']['hipchat']['auth_token'] = ''
 default['elastalert']['hipchat']['room_id'] = ''
