@@ -1,6 +1,7 @@
 # This is the folder that contains the rule yaml files
 # Any .yaml file will be loaded as a rule
-rules_folder: <%= node['elastalert']['conf_dir'] %>/rules
+# This refers to a location from docker container perspective, not host
+rules_folder: /opt/rules
 
 # How often ElastAlert will query elasticsearch
 # The unit can be anything from weeks to seconds
