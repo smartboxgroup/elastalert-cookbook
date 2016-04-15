@@ -18,7 +18,7 @@ end
 end
 
 if Chef::Config[:solo]
-  Chef::Log.warn('Skipping chef search for Logstash config')
+  Chef::Log.warn('Skipping node search when using chef-solo')
 else
   node.default['elastalert']['es_host'] = search(:node, "#{node['elastalert']['es_node_search_query']}").first.ipaddress
 end
