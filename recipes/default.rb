@@ -20,7 +20,7 @@ end
 if Chef::Config[:solo]
   Chef::Log.warn('Skipping node search when using chef-solo')
 else
-  node.default['elastalert']['es_host'] = search(:node, "#{node['elastalert']['es_node_search_query']}").first.ipaddress
+  node.default['elastalert']['es_host'] = search(:node, node['elastalert']['es_node_search_query']).first.ipaddress
 end
 
 %w{elastalert_config.yaml elastalert_supervisord.conf}.each do |config_file|
@@ -34,7 +34,7 @@ if node['elastalert']['rules'] then
     mutable_hash = JSON.parse(rule.dup.to_json)
     yml_rule_config = mutable_hash.to_yaml
     file "#{node['elastalert']['conf_dir']}/rules/#{name}-rule.yaml" do
-      content "#{yml_rule_config}"
+      content yml_rule_config
       mode 0644
     end
   end
