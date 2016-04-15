@@ -10,5 +10,5 @@ default['elastalert']['hipchat']['auth_token'] = ''
 default['elastalert']['hipchat']['room_id'] = ''
 default['elastalert']['pagerduty']['auth_token'] = ''
 default['elastalert']['es_node_search_query'] = "role:elasticsearch AND chef_environment:#{node.chef_environment}"
-default['elastalert']['set_time_zone'] = 'true'
+default['elastalert']['set_time_zone'] = true
 default['elastalert']['time_zone'] = 'Europe/Dublin'
