@@ -17,6 +17,7 @@ end
   end
 end
 
+# Find Elastic Search node to query
 if Chef::Config[:solo]
   Chef::Log.warn('Skipping node search when using chef-solo')
 else
@@ -31,8 +32,11 @@ end
 end
 
 if node['elastalert']['rules'] then
-  node['elastalert']['rules'].each do |name,rule|
-    mutable_hash = JSON.parse(rule.dup.to_json)
+  node['elastalert']['rules'].each_key do |name|
+    # Retrieve configuration common for all rules and mix it in
+    node.default['elastalert']['rules'][name] = node['elastalert']['rule_globals'] if node['elastalert']['rule_globals']
+    # Convert rule definition to YAML, it tales two steps
+    mutable_hash = JSON.parse(node['elastalert']['rules'][name].dup.to_json)
     yml_rule_config = mutable_hash.to_yaml
     file "#{node['elastalert']['conf_dir']}/rules/#{name}-rule.yaml" do
       content yml_rule_config
