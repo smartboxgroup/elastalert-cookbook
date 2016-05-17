@@ -27,7 +27,7 @@ end
 %w{elastalert_config.yaml elastalert_supervisord.conf}.each do |config_file|
   template "#{node['elastalert']['conf_dir']}/config/#{config_file}" do
     source "#{config_file}.erb"
-    notifies :restart, 'docker_container[elastalert]', :immediately
+    notifies :restart, 'docker_container[elastalert]', :delayed
   end
 end
 
@@ -41,6 +41,7 @@ if node['elastalert']['rules'] then
     file "#{node['elastalert']['conf_dir']}/rules/#{name}-rule.yaml" do
       content yml_rule_config
       mode 0644
+      notifies :restart, 'docker_container[elastalert]', :delayed
     end
   end
 end
