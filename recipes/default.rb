@@ -31,6 +31,8 @@ end
   end
 end
 
+rules_dir = "#{node['elastalert']['conf_dir']}/rules/"
+
 if node['elastalert']['rules'] then
   node['elastalert']['rules'].each_key do |name|
     # Retrieve configuration common for all rules and mix it in
@@ -38,7 +40,7 @@ if node['elastalert']['rules'] then
     # Convert rule definition to YAML, it tales two steps
     mutable_hash = JSON.parse(node['elastalert']['rules'][name].dup.to_json)
     yml_rule_config = mutable_hash.to_yaml
-    file "#{node['elastalert']['conf_dir']}/rules/#{name}-rule.yaml" do
+    file "#{rules_dir}#{name}-rule.yaml" do
       content yml_rule_config
       mode 0644
       notifies :restart, 'docker_container[elastalert]', :delayed
@@ -46,10 +48,24 @@ if node['elastalert']['rules'] then
   end
 end
 
+# If the rule gets removed from attributes or renamed - clean up the conf file
+keys    = node['elastalert']['rules'].keys.collect { |k| k.to_s }
+
+if File.exist?(rules_dir)
+  Dir.entries(rules_dir).each do |entry|
+    file "#{rules_dir}/#{entry}" do
+      backup false
+      action :delete
+      notifies :restart, 'docker_container[elastalert]', :delayed
+      only_if { File.file?("#{rules_dir}/#{entry}") && File.extname(entry) == ".yaml" && !keys.include?(File.basename(entry, "-rule.yaml") )}
+    end
+  end
+end
+
 # Start elastalert container
 docker_container 'elastalert' do
   repo "#{node["docker"]["registry"]}/#{node['docker']['elastalert']['image']}"
-  volumes [ "#{node['elastalert']['log_dir']}:/opt/logs:rw", "#{node['elastalert']['conf_dir']}/config/:/opt/config:ro", "#{node['elastalert']['conf_dir']}/rules/:/opt/rules:ro"  ]
+  volumes [ "#{node['elastalert']['log_dir']}:/opt/logs:rw", "#{node['elastalert']['conf_dir']}/config/:/opt/config:ro", "#{rules_dir}:/opt/rules:ro"  ]
   env [ "SET_CONTAINER_TIMEZONE=#{node['elastalert']['set_time_zone']}", "CONTAINER_TIMEZONE=#{node['elastalert']['time_zone']}",
         "ELASTICSEARCH_HOST=#{node['elastalert']['es_host']}", "ELASTICSEARCH_PORT=#{node['elastalert']['es_port']}" ]
   tag node['docker']['elastalert']['tag']
